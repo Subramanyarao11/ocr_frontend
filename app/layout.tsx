@@ -1,13 +1,9 @@
 import type { Metadata } from 'next'
 import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
-import { Inter as FontSans } from 'next/font/google'
+import { Inter } from 'next/font/google'
 
-const fontSans = FontSans({
-  subsets: ['latin'],
-  variable: '--font-sans',
-})
-
+const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: 'KYC Verification using OCR',
   description:
@@ -21,7 +17,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={fontSans.variable}>
+      <body className={inter.className}>
         {children}
         <Toaster />
       </body>

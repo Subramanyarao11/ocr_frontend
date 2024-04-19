@@ -98,10 +98,18 @@ export function Upload() {
         )
         console.log('Response:', response.data)
         const serializedData = encodeURIComponent(JSON.stringify(response.data))
-        toast({
-          title: 'Verification successful!',
-          description: 'The image has been verified successfully.',
-        })
+        if (response.data.result === 'Passed') {
+          toast({
+            title: 'Verification successful!',
+            description: 'The image has been verified successfully.',
+          })
+        } else {
+          toast({
+            title: 'Verification failed!',
+            description:
+              'Aadhar card format out of date or problem with the Image',
+          })
+        }
         router.push(`/results?verificationData=${serializedData}`)
       } catch (error) {
         console.error('Error uploading file:', error)
@@ -110,7 +118,7 @@ export function Upload() {
           title: 'Uh oh! Something went wrong.',
           description: 'There was a problem with your request.',
           action: (
-            <ToastAction onClick={() => router.refresh} altText='Try again'>
+            <ToastAction onClick={() => location.reload()} altText='Try again'>
               Try again
             </ToastAction>
           ),
@@ -211,7 +219,7 @@ export function Upload() {
                 {uploading ? (
                   <>
                     <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-                    Please wait
+                    Verifying...
                   </>
                 ) : (
                   'Verify'
