@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 
 import { Afacad } from 'next/font/google'
@@ -28,7 +29,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={afacad.variable + bricolage_grotesque.variable}>{children}</body>
+      <body className={afacad.variable + bricolage_grotesque.variable}>
+        {children}
+        <Toaster />
+      </body>
     </html>
   );
 }

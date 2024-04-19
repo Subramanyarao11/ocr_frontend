@@ -1,13 +1,63 @@
 'use client'
-import React , { useState } from "react";
+import React , { useRef, useState } from "react";
 import { Button } from "@/components/ui/button"
 import SvgIcon from './Svg'
-export function Upload() {
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ui/use-toast"
+import { ToastAction } from "../ui/toast";
 
+function UploadIcon(props: any) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" x2="12" y1="3" y2="15" />
+      </svg>
+    )
+  }
+
+
+  function XIcon(props: any) {
+    return (
+      <svg
+        {...props}
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M18 6 6 18" />
+        <path d="m6 6 12 12" />
+      </svg>
+    )
+  }
+
+export function Upload() {
     const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const router = useRouter();
+    const { toast } = useToast();
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      console.log(event.target.files);
       const file = event.target.files?.[0];
       if (file && file.type.startsWith('image')) {
         const reader = new FileReader();
@@ -24,8 +74,40 @@ export function Upload() {
 
     const handleRemoveImage = () => {
         setImageSrc(null);
-        const fileInput = document.getElementById('file-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
+        if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+
+    const handleVerify = async () => {
+        if (fileInputRef.current && fileInputRef.current.files && fileInputRef.current.files[0]) {
+            setUploading(true);
+            const formData = new FormData();
+            formData.append('file', fileInputRef.current.files[0]);
+
+            try {
+                const response = await axios.post('http://localhost:5000/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                });
+                console.log('Response:', response.data);
+                const serializedData = encodeURIComponent(JSON.stringify(response.data));
+                toast({
+                    title: 'Verification successful!',
+                    description: 'The image has been verified successfully.',
+                });
+                router.push(`/results?verificationData=${serializedData}`);
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                toast({
+                    variant: "destructive",
+                    title: "Uh oh! Something went wrong.",
+                    description: "There was a problem with your request.",
+                    action: <ToastAction onClick={() => router.refresh} altText="Try again">Try again</ToastAction>,
+                  })
+            } finally {
+                setUploading(false);
+            }
+        }
     };
 
   return (
@@ -53,7 +135,7 @@ export function Upload() {
                       htmlFor="file-upload"
                     >
                       <span>Upload a file</span>
-                      <input className="sr-only" id="file-upload" name="file-upload" type="file" onChange={handleFileChange} />
+                      <input className="sr-only" id="file-upload" name="file-upload" type="file" onChange={handleFileChange} ref={fileInputRef} />
                     </label>
                     <p className="pl-1">or drag and drop</p>
                   </div>
@@ -69,13 +151,15 @@ export function Upload() {
                         className="rounded-md object-cover mx-auto h-[200px] w-[300px]"
                         src={imageSrc}
                       />
-                      <button
-                        onClick={handleRemoveImage}
-                        className="absolute top-0 right-0 bg-white rounded-full p-1 m-2 cursor-pointer"
-                        title="Remove image"
-                      >
-                        <XIcon />
-                      </button>
+                     {!uploading && (
+    <button
+        onClick={handleRemoveImage}
+        className="absolute top-0 right-0 bg-white rounded-full p-1 m-2 cursor-pointer"
+        title="Remove image"
+    >
+        <XIcon />
+    </button>
+)}
                     </>
                   ) : (
                     <div className="rounded-md object-cover mx-auto h-[200px] w-[300px]">
@@ -84,54 +168,19 @@ export function Upload() {
                   )}
               </div>
               <div className="w-full max-w-xs flex flex-row gap-8">
-              <Button className="w-1/2" variant="outline" disabled={!imageSrc} onClick={handleRemoveImage}>Clear</Button>
-              <Button className="w-1/2" disabled={!imageSrc}>Verify</Button>
+              <Button className="w-1/2" variant="outline" disabled={!imageSrc || uploading} onClick={handleRemoveImage}>Clear</Button>
+              <Button className="w-1/2" disabled={!imageSrc || uploading} onClick={handleVerify}>
+              {uploading ? (
+                            <>
+                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                Please wait
+                            </>
+                        ) : "Verify"}
+              </Button>
               </div>
           </div>
         </div>
       </div>
     </div>
-  )
-}
-
-function UploadIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-      <polyline points="17 8 12 3 7 8" />
-      <line x1="12" x2="12" y1="3" y2="15" />
-    </svg>
-  )
-}
-
-
-function XIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 6 6 18" />
-      <path d="m6 6 12 12" />
-    </svg>
   )
 }
