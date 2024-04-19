@@ -1,19 +1,11 @@
 import type { Metadata } from 'next'
 import { Toaster } from '@/components/ui/toaster'
 import './globals.css'
+import { Inter as FontSans } from 'next/font/google'
 
-import { Afacad } from 'next/font/google'
-import { Bricolage_Grotesque } from 'next/font/google'
-
-const afacad = Afacad({
+const fontSans = FontSans({
   subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-afacad',
-})
-const bricolage_grotesque = Bricolage_Grotesque({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-bricolage_grotesque',
+  variable: '--font-sans',
 })
 
 export const metadata: Metadata = {
@@ -29,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={afacad.variable + bricolage_grotesque.variable}>
+      <body className={fontSans.variable}>
         {children}
         <Toaster />
       </body>

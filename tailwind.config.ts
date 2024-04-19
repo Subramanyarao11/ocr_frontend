@@ -1,5 +1,5 @@
-import type { Config } from 'tailwindcss'
 const { fontFamily } = require('tailwindcss/defaultTheme')
+import type { Config } from 'tailwindcss'
 
 const config = {
   darkMode: ['class'],
@@ -30,11 +30,7 @@ const config = {
         },
       },
       fontFamily: {
-        sans: [
-          'var(--font-sans)',
-          ...fontFamily.afacad,
-          ...fontFamily.bricolage_grotesque,
-        ],
+        sans: ['var(--font-sans)', ...fontFamily.sans],
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
