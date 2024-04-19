@@ -1,38 +1,38 @@
-import type { Metadata } from "next";
-import { Toaster } from "@/components/ui/toaster";
-import "./globals.css";
+import type { Metadata } from 'next'
+import { Toaster } from '@/components/ui/toaster'
+import './globals.css'
 
 import { Afacad } from 'next/font/google'
 import { Bricolage_Grotesque } from 'next/font/google'
 
 const afacad = Afacad({
-    subsets: ['latin'],
-    display: 'swap',
-    variable: '--font-afacad',
-  })
-  const bricolage_grotesque = Bricolage_Grotesque({
-    subsets: ['latin'],
-    display: 'swap',
-    variable: '--font-bricolage_grotesque',
-  })
-
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-afacad',
+})
+const bricolage_grotesque = Bricolage_Grotesque({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-bricolage_grotesque',
+})
 
 export const metadata: Metadata = {
-  title: "KYC Verification using OCR",
-  description: "Upload Aadhaar photo to see KYC Verification using OCR : A Machine Learning Approach",
-};
+  title: 'KYC Verification using OCR',
+  description:
+    'Upload Aadhaar photo to see KYC Verification using OCR : A Machine Learning Approach',
+}
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
+    <html lang='en'>
       <body className={afacad.variable + bricolage_grotesque.variable}>
         {children}
         <Toaster />
       </body>
     </html>
-  );
+  )
 }
